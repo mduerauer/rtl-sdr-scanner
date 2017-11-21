@@ -1,14 +1,5 @@
 package at.ac.fhstp.is161505.scanner;
 
-import java.util.Arrays;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-
 /**
  * This file is part of rtl-sdr-scanner.
  * <p>
@@ -40,29 +31,31 @@ import org.springframework.context.annotation.Bean;
  * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
  * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
  * <p>
- * Created by n17405180 on 18.11.17.
+ * Created by n17405180 on 21.11.17.
  */
-@SpringBootApplication
-@EnableAutoConfiguration
-public class Application {
+public class SignalDetectorAlert {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    private double frequency;
+
+    private double level;
+
+    public double getFrequency() {
+        return frequency;
     }
 
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
+    public double getLevel() {
+        return level;
+    }
 
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
+    public SignalDetectorAlert() {
 
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
-            }
+    }
 
-        };
+    public static SignalDetectorAlert forInput(double frequency, double level) {
+        SignalDetectorAlert alert = new SignalDetectorAlert();
+        alert.frequency = frequency;
+        alert.level = level;
+        return  alert;
     }
 
 }

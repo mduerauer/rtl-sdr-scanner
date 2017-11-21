@@ -1,14 +1,5 @@
 package at.ac.fhstp.is161505.scanner;
 
-import java.util.Arrays;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-
 /**
  * This file is part of rtl-sdr-scanner.
  * <p>
@@ -40,29 +31,10 @@ import org.springframework.context.annotation.Bean;
  * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
  * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
  * <p>
- * Created by n17405180 on 18.11.17.
+ * Created by n17405180 on 21.11.17.
  */
-@SpringBootApplication
-@EnableAutoConfiguration
-public class Application {
+public interface SignalDetectorAlertCallBack {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
-
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
-            }
-
-        };
-    }
+    void signalDetectorAlertCaught(SignalDetectorAlert alert);
 
 }

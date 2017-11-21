@@ -1,13 +1,9 @@
 package at.ac.fhstp.is161505.scanner;
 
-import java.util.Arrays;
+import at.ac.fhstp.is161505.scanner.input.Baseline;
+import org.junit.Test;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+import java.net.URISyntaxException;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -42,27 +38,14 @@ import org.springframework.context.annotation.Bean;
  * <p>
  * Created by n17405180 on 18.11.17.
  */
-@SpringBootApplication
-@EnableAutoConfiguration
-public class Application {
+public class BaselineTests {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+    @Test
+    public void shouldParseFile() throws URISyntaxException {
 
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
+        Baseline baseline = Baseline.fromFile(TestData.getBaselineTestData());
+        baseline.dump();
 
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
-
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
-            }
-
-        };
     }
 
 }

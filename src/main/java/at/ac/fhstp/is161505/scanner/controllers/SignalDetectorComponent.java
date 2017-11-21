@@ -1,13 +1,15 @@
-package at.ac.fhstp.is161505.scanner;
+package at.ac.fhstp.is161505.scanner.controllers;
 
-import java.util.Arrays;
+import at.ac.fhstp.is161505.scanner.SignalDetector;
+import at.ac.fhstp.is161505.scanner.input.Baseline;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.net.URISyntaxException;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -40,29 +42,27 @@ import org.springframework.context.annotation.Bean;
  * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
  * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
  * <p>
- * Created by n17405180 on 18.11.17.
+ * Created by n17405180 on 21.11.17.
  */
-@SpringBootApplication
-@EnableAutoConfiguration
-public class Application {
+@Component
+public class SignalDetectorComponent {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SignalDetectorComponent.class);
+
+    @Value("${scanner.baseline.resourceName}")
+    private String baselineResource;
+
+    private SignalDetector signalDetector;
+
+    public SignalDetectorComponent() {
+
     }
 
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
-
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
-            }
-
-        };
+    @PostConstruct
+    public void init() throws URISyntaxException {
+        File baselineFile = new File(SignalDetectorComponent.class.getResource(baselineResource).toURI());
+        Baseline baseline = Baseline.fromFile(baselineFile);
+        signalDetector = SignalDetector.withBaseline(baseline);
     }
 
 }

@@ -1,13 +1,11 @@
 package at.ac.fhstp.is161505.scanner;
 
-import java.util.Arrays;
+import at.ac.fhstp.is161505.scanner.input.SpectralDensityPoint;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -40,29 +38,37 @@ import org.springframework.context.annotation.Bean;
  * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
  * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
  * <p>
- * Created by n17405180 on 18.11.17.
+ * Created by n17405180 on 21.11.17.
  */
-@SpringBootApplication
-@EnableAutoConfiguration
-public class Application {
+public final class TestData {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    public static final String BASELINE_RESOURCE = "/testdata.out";
+
+    // BaselineItem{frequency=4750000.0, min=-65.9766, max=-65.7945, mean=-65.89078888888889, standardDeviation=0.06396525870336069}
+
+    public static final double INVALID_F = 0D;
+
+    public static final double F1 = 4750000.0D;
+
+    public static final double ALERT_D1 = -60D;
+
+    public static final double NO_ALERT_D1 = -65.7D;
+
+    public static final double ALERT_THRESHOLD = 0.5;
+
+    public static File getBaselineTestData() {
+        try {
+            return new File(BaselineTests.class.getResource(TestData.BASELINE_RESOURCE).toURI());
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
-
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
-            }
-
-        };
+    public static List<SpectralDensityPoint> getDensityPoints() {
+        List<SpectralDensityPoint> list = new ArrayList<>();
+        list.add(SpectralDensityPoint.forInput(F1, ALERT_D1));
+        list.add(SpectralDensityPoint.forInput(F1, NO_ALERT_D1));
+        return list;
     }
 
 }

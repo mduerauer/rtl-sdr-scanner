@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: rtl-sr-scanner
+server:
+  port: 9000
+scanner:
+  baseline:
+    resourceName: /baseline.out
