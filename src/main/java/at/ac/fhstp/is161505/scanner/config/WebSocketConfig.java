@@ -1,16 +1,10 @@
-package at.ac.fhstp.is161505.scanner.controllers;
+package at.ac.fhstp.is161505.scanner.config;
 
-import at.ac.fhstp.is161505.scanner.SignalDetectorAlert;
-import at.ac.fhstp.is161505.scanner.SignalDetectorComponent;
-import at.ac.fhstp.is161505.scanner.input.BaselineItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -43,22 +37,23 @@ import java.util.List;
  * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
  * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
  * <p>
- * Created by n17405180 on 21.11.17.
+ * Created by n17405180 on 22.11.17.
  */
-@RestController
-public class SignalDetectorController {
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
-    private SignalDetectorComponent signalDetectorComponent;
+    public static final String ALERT_DESTINATION = "/topic/alerts";
 
-    @Autowired
-    public SignalDetectorController(SignalDetectorComponent signalDetectorComponent) {
-        this.signalDetectorComponent = signalDetectorComponent;
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
-    @RequestMapping(value = "/baseline", method = RequestMethod.GET)
-    public Collection<BaselineItem> baseline() {
-        return signalDetectorComponent.getBaseline();
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/gs-guide-websocket").withSockJS();
     }
-
 
 }

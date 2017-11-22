@@ -57,5 +57,4 @@ public class SignalDetectorAlert {
         alert.level = level;
         return  alert;
     }
-
 }

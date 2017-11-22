@@ -1,15 +1,23 @@
 package at.ac.fhstp.is161505.scanner;
 
+import at.ac.fhstp.is161505.scanner.config.WebSocketConfig;
 import at.ac.fhstp.is161505.scanner.input.Baseline;
+import at.ac.fhstp.is161505.scanner.input.BaselineItem;
 import at.ac.fhstp.is161505.scanner.input.SpectralDensityPoint;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -49,6 +57,11 @@ public class SignalDetectorComponent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SignalDetectorComponent.class);
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    @Autowired
+    private SimpMessageSendingOperations msgTemplate;
+
     @Value("${scanner.baseline.resourceName}")
     private String baselineResource;
 
@@ -67,9 +80,21 @@ public class SignalDetectorComponent {
         signalDetector.register(alert -> {
             LOGGER.info("Alert caught: f={} Hz, l={} dB/Hz", alert.getFrequency(), alert.getLevel());
         });
+
+        signalDetector.register(alert -> {
+            try {
+                msgTemplate.convertAndSend(WebSocketConfig.ALERT_DESTINATION, mapper.writeValueAsString(alert));
+            } catch (JsonProcessingException e) {
+                LOGGER.warn("Can't convert alert to json.");
+            }
+        });
     }
 
     public void detect(SpectralDensityPoint point) throws InvalidFrequencyException {
         signalDetector.detect(point);
+    }
+
+    public Collection<BaselineItem> getBaseline() {
+        return signalDetector.getBaseline().getBaselineItems();
     }
 }
