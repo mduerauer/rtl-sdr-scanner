@@ -56,10 +56,14 @@ public class ScannerRunner implements CommandLineRunner {
 
         LOGGER.debug("ScannerRunner.run() called.");
 
+        if(args.length < 1) {
+            throw new RuntimeException("Please provide a frequency scanner executable");
+        }
+
         try {
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.directory(new File(System.getProperty("user.home")));
-            processBuilder.command("/Users/n17405180/test.sh");
+            processBuilder.command(args[0]);
             Process process = processBuilder.start();
 
             byte[] buffer = new byte[4000];
