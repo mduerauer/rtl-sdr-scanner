@@ -1,4 +1,13 @@
-package at.ac.fhstp.is161505.scanner.input;
+package at.ac.fhstp.is161505.scanner.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageConverter;
+import org.springframework.jms.support.converter.MessageType;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -31,48 +40,27 @@ package at.ac.fhstp.is161505.scanner.input;
  * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
  * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
  * <p>
- * Created by n17405180 on 21.11.17.
+ * Created by n17405180 on 22.11.17.
  */
-public class SpectralDensityPoint {
+@Configuration
+@EnableJms
+public class MessagingConfig {
 
-    private double frequency;
+    public static final String SCANNER_QUEUE = "scanner-queue";
 
-    private double level;
-
-    public double getFrequency() {
-        return frequency;
+    @Bean
+    public JmsListenerContainerFactory<?> queueListenerFactory() {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setMessageConverter(messageConverter());
+        return factory;
     }
 
-    public void setFrequency(double frequency) {
-        this.frequency = frequency;
+    @Bean
+    public MessageConverter messageConverter() {
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.setTargetType(MessageType.TEXT);
+        converter.setTypeIdPropertyName("_type");
+        return converter;
     }
 
-    public double getLevel() {
-        return level;
-    }
-
-    public void setLevel(double level) {
-        this.level = level;
-    }
-
-    public static SpectralDensityPoint forInput(double frequency, double level) {
-        SpectralDensityPoint point = new SpectralDensityPoint();
-        point.frequency = frequency;
-        point.level = level;
-        return point;
-    }
-
-    public static SpectralDensityPoint forInput(String data) {
-
-        String[] parts = data.split("\\s+");
-
-        if(parts.length != 2) {
-            return null;
-        }
-
-        double frequency = Double.valueOf(parts[0]);
-        double density = Double.valueOf(parts[1]);
-
-        return SpectralDensityPoint.forInput(frequency, density);
-    }
 }

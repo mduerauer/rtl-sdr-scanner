@@ -1,4 +1,15 @@
-package at.ac.fhstp.is161505.scanner.input;
+package at.ac.fhstp.is161505.scanner;
+
+import at.ac.fhstp.is161505.scanner.input.Baseline;
+import at.ac.fhstp.is161505.scanner.input.SpectralDensityPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.net.URISyntaxException;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -33,46 +44,32 @@ package at.ac.fhstp.is161505.scanner.input;
  * <p>
  * Created by n17405180 on 21.11.17.
  */
-public class SpectralDensityPoint {
+@Component
+public class SignalDetectorComponent {
 
-    private double frequency;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SignalDetectorComponent.class);
 
-    private double level;
+    @Value("${scanner.baseline.resourceName}")
+    private String baselineResource;
 
-    public double getFrequency() {
-        return frequency;
+    private SignalDetector signalDetector;
+
+    public SignalDetectorComponent() {
+
     }
 
-    public void setFrequency(double frequency) {
-        this.frequency = frequency;
+    @PostConstruct
+    public void init() throws URISyntaxException {
+        File baselineFile = new File(SignalDetectorComponent.class.getResource(baselineResource).toURI());
+        Baseline baseline = Baseline.fromFile(baselineFile);
+        signalDetector = SignalDetector.withBaseline(baseline);
+
+        signalDetector.register(alert -> {
+            LOGGER.info("Alert caught: f={} Hz, l={} dB/Hz", alert.getFrequency(), alert.getLevel());
+        });
     }
 
-    public double getLevel() {
-        return level;
-    }
-
-    public void setLevel(double level) {
-        this.level = level;
-    }
-
-    public static SpectralDensityPoint forInput(double frequency, double level) {
-        SpectralDensityPoint point = new SpectralDensityPoint();
-        point.frequency = frequency;
-        point.level = level;
-        return point;
-    }
-
-    public static SpectralDensityPoint forInput(String data) {
-
-        String[] parts = data.split("\\s+");
-
-        if(parts.length != 2) {
-            return null;
-        }
-
-        double frequency = Double.valueOf(parts[0]);
-        double density = Double.valueOf(parts[1]);
-
-        return SpectralDensityPoint.forInput(frequency, density);
+    public void detect(SpectralDensityPoint point) throws InvalidFrequencyException {
+        signalDetector.detect(point);
     }
 }

@@ -1,15 +1,15 @@
-package at.ac.fhstp.is161505.scanner.controllers;
+package at.ac.fhstp.is161505.scanner.input;
 
-import at.ac.fhstp.is161505.scanner.SignalDetector;
-import at.ac.fhstp.is161505.scanner.input.Baseline;
+import at.ac.fhstp.is161505.scanner.config.MessagingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -45,24 +45,48 @@ import java.net.URISyntaxException;
  * Created by n17405180 on 21.11.17.
  */
 @Component
-public class SignalDetectorComponent {
+public class ScannerRunner implements CommandLineRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SignalDetectorComponent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScannerRunner.class);
 
-    @Value("${scanner.baseline.resourceName}")
-    private String baselineResource;
+    @Autowired
+    private JmsTemplate jmsTemplate;
 
-    private SignalDetector signalDetector;
+    public void run(String... args) {
 
-    public SignalDetectorComponent() {
+        LOGGER.debug("ScannerRunner.run() called.");
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder();
+            processBuilder.directory(new File(System.getProperty("user.home")));
+            processBuilder.command("/Users/n17405180/test.sh");
+            Process process = processBuilder.start();
+
+            byte[] buffer = new byte[4000];
+            InputStream out = process.getInputStream();
+            while (isAlive(process)) {
+
+                int no = out.available();
+                if (no > 0) {
+                    int n = out.read(buffer, 0, Math.min(no, buffer.length));
+                    String input = new String(buffer, 0, n).trim();
+                    jmsTemplate.convertAndSend(MessagingConfig.SCANNER_QUEUE, input);
+                }
+
+            }
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
-    @PostConstruct
-    public void init() throws URISyntaxException {
-        File baselineFile = new File(SignalDetectorComponent.class.getResource(baselineResource).toURI());
-        Baseline baseline = Baseline.fromFile(baselineFile);
-        signalDetector = SignalDetector.withBaseline(baseline);
+    public static boolean isAlive(Process p) {
+        try {
+            p.exitValue();
+            return false;
+        }
+        catch (IllegalThreadStateException e) {
+            return true;
+        }
     }
-
 }
