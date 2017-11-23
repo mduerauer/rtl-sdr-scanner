@@ -51,7 +51,7 @@ if [ -z  ${RTLPWRFFT_EXEC+x} ]; then
     RTLPWRFFT_EXEC=`which rtl_power_fftw`
 fi
 
-if [ -x ${RTLPWRFFT_EXEC} ]; then
+if [ ! -x ${RTLPWRFFT_EXEC} ]; then
     echo "ERROR: Can't find rtl_power_fftw executable. If you want to launch rtl-sdr-scanner in demo mode add cli param --demo"
     INVALID_ARGS=Y
 fi
@@ -91,11 +91,9 @@ EOL
 
 chmod +x ${APP_DIR}/.rtlpwrfft-wrapper
 
-#echo "exec ${RTLPWRFFT_EXEC}" >> ${WRAPPER}
-
 APP_CMD="${JAVA_EXEC} -jar ${JAR_FILE} ${APP_DIR}/.rtlpwrfft-wrapper"
-
 echo "INFO: Executing ${APP_CMD}"
+
 exec ${APP_CMD}
 
 if [ "${WORK_DIR}" != "{$APP_DIR}" ]; then

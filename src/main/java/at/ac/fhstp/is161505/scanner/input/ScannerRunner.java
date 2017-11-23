@@ -9,8 +9,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -73,13 +75,16 @@ public class ScannerRunner implements CommandLineRunner {
 
             byte[] buffer = new byte[4000];
             InputStream out = process.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(out));
             while (isAlive(process)) {
 
                 int no = out.available();
                 if (no > 0) {
-                    int n = out.read(buffer, 0, Math.min(no, buffer.length));
-                    String input = new String(buffer, 0, n).trim();
-                    jmsTemplate.convertAndSend(MessagingConfig.SCANNER_QUEUE, input);
+
+                    String input = null;
+                    while((input = bufferedReader.readLine()) != null) {
+                        jmsTemplate.convertAndSend(MessagingConfig.SCANNER_QUEUE, input.trim());
+                    }
                 }
 
             }
