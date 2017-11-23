@@ -43,7 +43,7 @@ public class BaselineTests {
     @Test
     public void shouldParseFile() throws URISyntaxException {
 
-        Baseline baseline = Baseline.fromFile(TestData.getBaselineTestData());
+        Baseline baseline = Baseline.fromInputStream(TestData.getBaselineTestData());
         baseline.dump();
 
     }

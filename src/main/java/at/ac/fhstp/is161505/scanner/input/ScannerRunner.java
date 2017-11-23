@@ -1,6 +1,7 @@
 package at.ac.fhstp.is161505.scanner.input;
 
 import at.ac.fhstp.is161505.scanner.config.MessagingConfig;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,10 @@ public class ScannerRunner implements CommandLineRunner {
     private JmsTemplate jmsTemplate;
 
     public void run(String... args) {
+
+        for(int i = 0; i < args.length; i++) {
+            LOGGER.debug("ARG {}: {}", i, args[i]);
+        }
 
         LOGGER.debug("ScannerRunner.run() called.");
 

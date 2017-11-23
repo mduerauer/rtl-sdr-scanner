@@ -3,10 +3,12 @@ package at.ac.fhstp.is161505.scanner.input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,7 +53,7 @@ public class Baseline {
     private Baseline() {
     }
 
-    public static Baseline fromFile(File input) {
+    public static Baseline fromInputStream(InputStream input) {
         Baseline baseline = new Baseline();
         baseline.read(input);
         baseline.recalculate();
@@ -62,9 +64,9 @@ public class Baseline {
         return data.get(frequency);
     }
 
-    private void read(File input) {
+    private void read(InputStream input) {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(input))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             String line;
             while ((line = br.readLine()) != null) {
 

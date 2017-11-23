@@ -57,7 +57,7 @@ public class SignalDetectorTests {
 
     @Before
     public void initialize() throws URISyntaxException {
-        this.baseline = Baseline.fromFile(TestData.getBaselineTestData());
+        this.baseline = Baseline.fromInputStream(TestData.getBaselineTestData());
         this.signalDetector = SignalDetector.withBaseline(this.baseline);
     }
 

@@ -3,6 +3,7 @@ package at.ac.fhstp.is161505.scanner;
 import at.ac.fhstp.is161505.scanner.input.SpectralDensityPoint;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +57,8 @@ public final class TestData {
 
     public static final double ALERT_THRESHOLD = 0.5;
 
-    public static File getBaselineTestData() {
-        try {
-            return new File(BaselineTests.class.getResource(TestData.BASELINE_RESOURCE).toURI());
-        } catch (URISyntaxException e) {
-            return null;
-        }
+    public static InputStream getBaselineTestData() {
+        return BaselineTests.class.getResourceAsStream(TestData.BASELINE_RESOURCE);
     }
 
     public static List<SpectralDensityPoint> getDensityPoints() {

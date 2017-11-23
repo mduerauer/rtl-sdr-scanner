@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * This file is part of rtl-sdr-scanner.
@@ -73,8 +73,11 @@ public class SignalDetectorComponent {
 
     @PostConstruct
     public void init() throws URISyntaxException {
-        File baselineFile = new File(SignalDetectorComponent.class.getResource(baselineResource).toURI());
-        Baseline baseline = Baseline.fromFile(baselineFile);
+
+        LOGGER.debug("Resource Name: {}", baselineResource);
+
+        InputStream baselineStream = SignalDetectorComponent.class.getResourceAsStream(baselineResource);
+        Baseline baseline = Baseline.fromInputStream(baselineStream);
         signalDetector = SignalDetector.withBaseline(baseline);
 
         signalDetector.register(alert -> {
