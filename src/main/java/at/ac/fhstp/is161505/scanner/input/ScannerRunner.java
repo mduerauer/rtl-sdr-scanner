@@ -80,10 +80,12 @@ public class ScannerRunner implements CommandLineRunner {
 
                 int no = out.available();
                 if (no > 0) {
-
                     String input = null;
                     while((input = bufferedReader.readLine()) != null) {
-                        jmsTemplate.convertAndSend(MessagingConfig.SCANNER_QUEUE, input.trim());
+                        String data = input.trim();
+                        if(data != null && !data.isEmpty()) {
+                            jmsTemplate.convertAndSend(MessagingConfig.SCANNER_QUEUE, data);
+                        }
                     }
                 }
 
