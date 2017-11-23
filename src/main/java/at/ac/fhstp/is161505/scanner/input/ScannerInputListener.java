@@ -69,6 +69,7 @@ public class ScannerInputListener {
 
         if(densityPoint == null) {
             LOGGER.debug("Can't parse input: {}", data);
+            return;
         }
 
         try {
