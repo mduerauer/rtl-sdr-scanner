@@ -106,7 +106,7 @@ public class SignalDetector {
 
         // Check if the baseline contains the frequency
         if(item == null) {
-            LOGGER.warn("No such frequency {} in baseline.", frequency);
+            LOGGER.trace("No such frequency {} in baseline.", frequency);
             throw new InvalidFrequencyException(frequency);
         }
 
@@ -115,7 +115,7 @@ public class SignalDetector {
         double mean = StatisticsUtils.mean(level, item.getMin(), item.getMax());
         double standardDeviation = StatisticsUtils.standardDeviation(mean, level, item.getMin(), item.getMax());
 
-        LOGGER.debug("Standard Deviation is " + standardDeviation);
+        LOGGER.trace("Standard Deviation is " + standardDeviation);
 
         /*
             If the density level standard deviation between level, min and max

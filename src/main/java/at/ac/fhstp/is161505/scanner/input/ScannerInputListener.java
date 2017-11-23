@@ -64,17 +64,17 @@ public class ScannerInputListener {
     public void receiveMessage(@Payload String data,
                                @Headers MessageHeaders headers,
                                Message message, Session session) {
-        LOGGER.debug("Got input: {}", data);
+        LOGGER.trace("Got input: {}", data);
         SpectralDensityPoint densityPoint = SpectralDensityPoint.forInput(data);
 
         if(densityPoint == null) {
-            LOGGER.info("Can't parse input: {}", data);
+            LOGGER.debug("Can't parse input: {}", data);
         }
 
         try {
             signalDetector.detect(densityPoint);
         } catch (InvalidFrequencyException e) {
-            LOGGER.warn("Frequency {} Hz not in baseline", e.getFrequency());
+            LOGGER.trace("Frequency {} Hz not in baseline", e.getFrequency());
         }
 
     }
